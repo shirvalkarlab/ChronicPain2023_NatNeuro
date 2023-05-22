@@ -1,7 +1,11 @@
 This Repository contains original data and code to reproduce results and figures from the article: 
 
 Shirvalkar et. al., Nature Neuroscience 2023
-First-in-human prediction of chronic pain state using intracranial neural biomarkers 
+First-in-human prediction of chronic pain state using intracranial neural biomarkers
+ 
+
+NOTE!!! - If you are having trouble downloading this on GitHub or DABI, please find it on Dropbox here: https://www.dropbox.com/sh/q0nyyoipudk28wu/AAAgUolShLa7_ddVdgL3n9kMa?dl=0
+
 =====================================================================================
  
 1. MATLAB based code and data is in the MATLAB folder including: 
