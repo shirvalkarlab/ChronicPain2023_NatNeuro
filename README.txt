@@ -4,7 +4,8 @@ Shirvalkar et. al., Nature Neuroscience 2023
 First-in-human prediction of chronic pain state using intracranial neural biomarkers
  
 
-NOTE!!! - If you are having trouble downloading this on GitHub or DABI, please find it on Dropbox here: https://www.dropbox.com/sh/q0nyyoipudk28wu/AAAgUolShLa7_ddVdgL3n9kMa?dl=0
+NOTE!!! Due to github's petulance, there are 2 *.mat files missing from the database on github. 
+TO DOWNLOAD ALL CODE AND DATA FILES PLEASE USE THE FOLLOWING LINK: https://www.dropbox.com/sh/q0nyyoipudk28wu/AAAgUolShLa7_ddVdgL3n9kMa?dl=0
 
 =====================================================================================
  
