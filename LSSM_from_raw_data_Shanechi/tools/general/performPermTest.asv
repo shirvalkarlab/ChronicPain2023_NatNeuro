@@ -1,0 +1,66 @@
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Omid Sani, Maryam Shanechi 
+%  Shanechi Lab, University of Southern California, 2019
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%performCVedModelFit Permutes the labels and performs cross-validated decoding
+%using permuted data to get the chance level
+%   Inputs:
+%     - (1) X: predictors
+%     - (2) Y: labels
+%     - (4) settings: struct with additional settings. For details, see
+%   Outputs:
+%     - (1) ax
+%   Usage example:
+%       [permInds, permStats] = performPermTest(X, Y, settings)
+
+function [permInds, permStats, trueStats] = performPermTest(X, Y, settings)
+
+if nargin < 3, settings = struct; end
+if ~isfield(settings, 'numPerms'), settings.numPerms = 1000; end
+if ~isfield(settings, 'savePath'), settings.savePath = ''; end
+
+permInds = cell(settings.numPerms, 1);
+permStats = cell(settings.numPerms, 1);
+parfor p = 1:settings.numPerms
+    permInds{p} = randperm(numel(Y));
+    thisSettings = settings;
+    thisSettings.savePath = '';
+    [~, ~, permStats{p}, ~] = performCVedModelFit(X, Y(permInds{p}), thisSettings);
+    fprintf('.');
+end
+fprintf('\n');
+
+if nargout < 1 || ~isempty(settings.savePath)
+    [~, ~, trueStats] = performCVedModelFit(X, Y, settings);
+    % Compute probability of permuted being as good as real or better
+    permStatsArr = cell2mat(permStats);
+    pValue = (1+sum([permStatsArr.perf] >= trueStats.perf)) / (1+numel(permStats));
+        
+    if strcmpi(trueStats.perfMeasure, 'AUC')
+        figH = figure; ax = axes; hold(ax, 'on');
+        % Add AUC for permuted data
+        for p = 1:numel(permStats)
+            [X,Y,T,AUC] = perfcurve(permStats{p}.allTrueVals, permStats{p}.allPreds, 1);
+            plot(ax, X, Y, 'Color', [0.8*[1 1 1] 0.5], 'LineWidth', 0.5); 
+        end
+        % Add AUC for the real data
+        settings.ax = ax; 
+        plotAUC(trueStats.allTrueVals, trueStats.allPreds, 1, settings);
+        
+        titleStrs = ax.Title.String;
+        if ~iscell(titleStrs), titleStrs = {titleStrs}; end
+        title(ax, sprintf('%s (permutation-test P < %.2g)', strjoin(titleStrs, newline), pValue));
+
+%         figure; histogram([permStatsArr.perf]); xlabel('AUC');
+    else
+        figH = figure; ax = axes; 
+        scatter(ax, trueStats.allTrueVals, trueStats.allPreds, 'Marker', 'x', 'MarkerEdgeColor', 'k');
+        title(ax, sprintf('%s = %.2g, P = %.3g', trueStats.perfMeasure, trueStats.perf, pValue));
+    end
+    if ~isempty(settings.savePath)
+        fprintf('Saving figure as %s\n', settings.savePath);
+        saveas(figH, settings.savePath);
+    end
+end
+
+end
